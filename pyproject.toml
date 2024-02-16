@@ -1,0 +1,33 @@
+[project]
+name = "python-package-template"
+authors = [
+    # you can specify multiple authors if required!
+    { name = "YOUR NAME HERE", email = "YOUR.NAME@mail.com" },
+]
+description = "CHANGEME"
+urls = { Source = "http://github/ORGANIZATION/REPO.git" }
+dependencies = [
+    # add all dependencies of your package here
+]
+requires-python = ">=3.8"
+license = { text = "MIT license" }
+dynamic = ["readme", "version"]
+
+# you can add CLI tools which should be installed when installing the package
+# [project.scripts]
+# cli-command = "pkg_name.module:function"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = { attr = "pkg_name._version.__version__" }
+readme = { file = ["README.md"], content-type = "text/markdown" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "unittests"]
