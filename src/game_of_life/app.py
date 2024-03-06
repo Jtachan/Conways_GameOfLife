@@ -1,6 +1,5 @@
-"""main"""
+"""The module contains the class to launch the app."""
 import random
-from typing import Optional
 
 import pygame
 from pybase_ext.constants import RGB
@@ -16,10 +15,10 @@ FPS = 10
 
 
 class GameOfLife:
-    """
+    """Class containing the main code and all routines for the simulation."""
 
-    """
     def __init__(self):
+        """Constructor of the class."""
         self._running = True
         self._playing = True
         self._screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -30,23 +29,56 @@ class GameOfLife:
 
     @staticmethod
     def generate_random_cells(nof_cells: int) -> set[tuple[int, int]]:
+        """
+        Generates randoms positions, without repeating them, to be considered
+        as living cells.
+
+        Parameters
+        ----------
+        nof_cells: int
+            Ideal number of cells to generate.
+
+        Returns
+        -------
+        set of positions:
+            Final random generated positions. Its length might be lower than the
+            specified number of cells, as the same cell position could be generated
+            multiple times. This final returned value does not contain any repeated
+            position.
+        """
         return set(
             (random.randrange(0, GRID_HEIGHT), random.randrange(0, GRID_WIDTH))
             for _ in range(nof_cells)
         )
 
     @staticmethod
-    def get_neighbors(pos_x: int, pos_y: int) -> list[tuple[int, int]]:
+    def get_neighbors_positions(col: int, row: int) -> list[tuple[int, int]]:
+        """
+        Giving a cell coordinates, returns all its neighbors. The method does not
+        consider the state of the cells at these positions.
+
+        Parameters
+        ----------
+        col: int
+            Number of the column, or X position, of the central cell.
+        row: int
+            Number of the row, or Y position, of the central cell.
+
+        Returns
+        -------
+        list of tuples:
+            List containing the neighbors' positions.
+        """
         displacement = (-1, 0, 1)
         valid_neighbors = []
 
         for dx in displacement:
-            cell_x = pos_x + dx
+            cell_x = col + dx
             # Skip cells outside the width limits.
             if cell_x < 0 or cell_x > GRID_WIDTH:
                 continue
             for dy in displacement:
-                cell_y = pos_y + dy
+                cell_y = row + dy
                 # Skip cells outside the height limits.
                 if cell_y < 0 or cell_y > GRID_HEIGHT:
                     continue
@@ -60,19 +92,32 @@ class GameOfLife:
         return valid_neighbors
 
     def calculate_next_cells_generation(self):
-        all_cells_neighbors = set()
+        """
+        Calculates the positions of the cells to be alive at the next frame.
+
+        Algorithm logic
+        ---------------
+        Cells update their position and other near cells by the following rules:
+
+        * Birth: A cell becomes alive if it is surrounded exactly by three cells.
+        * Death: A cell dies in one of two cases:
+            - Overpopulation: If it is surrounded by more than three living cells.
+            - Isolation: If it doesn't have any living neighbors.
+        * Remain alive: If it has two or three living neighbors.
+        """
+        visited_neighbors = set()
         new_positions = set()
 
         for position in self._positions:
-            neighbors = self.get_neighbors(*position)
-            all_cells_neighbors.update(neighbors)
-            neighbors = list(filter(lambda x: x in self._positions, neighbors))
+            neighbors = self.get_neighbors_positions(*position)
+            visited_neighbors.update(neighbors)
+            nof_neighbors = len(list(filter(lambda x: x in self._positions, neighbors)))
 
-            if len(neighbors) in (2, 3):
+            if nof_neighbors in (2, 3):
                 new_positions.add(position)
 
-        for position in all_cells_neighbors:
-            neighbors = self.get_neighbors(*position)
+        for position in visited_neighbors:
+            neighbors = self.get_neighbors_positions(*position)
             neighbors = list(filter(lambda x: x in self._positions, neighbors))
 
             if len(neighbors) == 3:
@@ -81,6 +126,9 @@ class GameOfLife:
         self._positions = new_positions
 
     def draw_grid(self):
+        """
+        Draws, on the screen, the vertical and horizontal lines that compose the grid.
+        """
         for row in range(GRID_HEIGHT):
             row_cell_line_pos = row * TILE_SIZE
             pygame.draw.line(
@@ -105,11 +153,9 @@ class GameOfLife:
 
         Parameters
         ----------
-        positions : set of cell coordinates
-
-        Returns
-        -------
-
+        positions: set of cell coordinates
+            All cells' positions, specified as (col, row), representing the
+            living cells.
         """
         for col, row in positions:
             cell_rect = (col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
