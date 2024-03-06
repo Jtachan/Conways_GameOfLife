@@ -194,8 +194,15 @@ class GameOfLife:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.update_mouse_clicked_cell()
 
-            self.update_display()
-            self.calculate_next_cells_generation()
+                elif event.type == pygame.K_SPACE:
+                    # FIXME: pause/continue the game when the space par is pressed
+                    self._playing = not self._playing
+
+                # TODO: generate new random positions if 'G' is pressed.
+
+            if self._playing:
+                self.update_display()
+                self.calculate_next_cells_generation()
 
         pygame.quit()
 
