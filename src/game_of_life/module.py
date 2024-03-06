@@ -16,6 +16,9 @@ FPS = 10
 
 
 class GameOfLife:
+    """
+
+    """
     def __init__(self):
         self._running = True
         self._playing = True
@@ -96,18 +99,34 @@ class GameOfLife:
                 end_pos=(col_cell_line_pos, HEIGHT),
             )
 
-    def paint_cells(self, positions: Optional[set[tuple[int, int]]] = None):
+    def paint_cells(self, positions: set[tuple[int, int]]):
+        """
+        Paints as yellow all the parsed cell positions.
+
+        Parameters
+        ----------
+        positions : set of cell coordinates
+
+        Returns
+        -------
+
+        """
         for col, row in positions:
             cell_rect = (col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
             pygame.draw.rect(surface=self._screen, color=RGB.YELLOW, rect=cell_rect)
 
     def update_display(self):
+        """
+        Method to be called every iteration, holding all the drawing functions that
+        refer to the grid (the display).
+        """
         self._screen.fill(color=RGB.SILVER)
         self.draw_grid()
         self.paint_cells(self._positions)
         pygame.display.update()
 
     def update_mouse_clicked_cell(self):
+        """Updates the state of the cell, which was clicked by the mouse."""
         pixel_x, pixel_y = pygame.mouse.get_pos()
         cell_pos = (pixel_x // TILE_SIZE, pixel_y // TILE_SIZE)
 
@@ -117,6 +136,7 @@ class GameOfLife:
             self._positions.add(cell_pos)
 
     def run(self):
+        """Main run loop for the game."""
 
         while self._running:
             self._clock.tick(FPS)
