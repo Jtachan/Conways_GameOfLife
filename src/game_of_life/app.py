@@ -14,7 +14,15 @@ class GameOfLife:
     FPS = 10
 
     def __init__(self, width: int = 800, height: int = 800):
-        """Constructor of the class."""
+        """Constructor of the class.
+
+        Parameters
+        ----------
+        width: int
+            Number of pixels that represent the width of the screen.
+        height: int
+            Number of pixels that represent the height of the screen.
+        """
         self._running = True
         self._playing = True
         self._grid_width = width // GameOfLife.TILE_SIZE
@@ -187,6 +195,8 @@ class GameOfLife:
 
     def run(self):
         """Main run loop for the game."""
+        pygame.display.set_caption("Playing")
+        self.print_instructions()
 
         while self._running:
             self._clock.tick(GameOfLife.FPS)
@@ -198,17 +208,35 @@ class GameOfLife:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.update_mouse_clicked_cell()
 
-                elif event.type == pygame.K_SPACE:
-                    # FIXME: pause/continue the game when the space par is pressed
-                    self._playing = not self._playing
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self._playing = not self._playing
+                        pygame.display.set_caption(
+                            "Playing" if self._playing else "Paused"
+                        )
+                    elif event.key == pygame.K_g:
+                        self._positions = self.generate_random_cells(
+                            nof_cells=random.randrange(4, 8) * self._grid_width
+                        )
 
-                # TODO: generate new random positions if 'G' is pressed.
-
+            self.update_display()
             if self._playing:
-                self.update_display()
                 self.calculate_next_cells_generation()
 
         pygame.quit()
+
+    @staticmethod
+    def print_instructions():
+        """Prints the instructions to understand how to use the keys on the terminal."""
+        print(
+            "Conway's Game Of Life\n"
+            "---------------------\n\n"
+            "Welcome to the simulation!\n"
+            "Use the following commands to interact with it:\n"
+            "\t- Use the space bar to stop/resume the simulation.\n"
+            "\t- Press 'G' to generate a new random game.\n"
+            "\t- Click on a cell with the mouse to update its state."
+        )
 
 
 if __name__ == "__main__":
