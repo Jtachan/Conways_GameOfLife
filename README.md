@@ -1,22 +1,35 @@
-This is a personal project, not finished yet.
-
 # Game of Life
 
 TBD: About the game of life (brief)
 
-## 🐍 Python Setup
+## Installation
 
-TDB: Update requirements / setup
+### Method 1: pip
 
-**Requirements**
+Install the repository with pip + git:
 
-- Python 3.8 or higher
+```shell
+pip install git+https://github.com/Jtachan/Conways_GameOfLife.git
+```
 
-**Installation**
+## Usage
 
-...
+Launch the game with the following command:
 
-## 📖 Documentation
+```shell
+python src/game_of_life/app.py
+```
 
-TBD: Extended documentation at `docs` folder 
+The following instructions are printed on the terminal:
+
+```text
+Conway's Game Of Life
+---------------------
+
+Welcome to the simulation!
+Use the following commands to interact with it:
+    - Use the space bar to stop/resume the simulation.
+    - Press 'G' to generate a new random game.
+    - Click on a cell with the mouse to update its state.
+```
 
