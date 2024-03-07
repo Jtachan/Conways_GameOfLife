@@ -6,29 +6,27 @@ from pybase_ext.constants import RGB
 
 pygame.init()
 
-WIDTH = 800
-HEIGHT = 800
-TILE_SIZE = 20
-GRID_WIDTH = WIDTH // TILE_SIZE
-GRID_HEIGHT = HEIGHT // TILE_SIZE
-FPS = 10
-
 
 class GameOfLife:
     """Class containing the main code and all routines for the simulation."""
 
-    def __init__(self):
+    TILE_SIZE = 20
+    FPS = 10
+
+    def __init__(self, width: int = 800, height: int = 800):
         """Constructor of the class."""
         self._running = True
         self._playing = True
-        self._screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self._grid_width = width // GameOfLife.TILE_SIZE
+        self._grid_height = height // GameOfLife.TILE_SIZE
+
+        self._screen = pygame.display.set_mode((width, width))
         self._clock = pygame.time.Clock()
         self._positions = self.generate_random_cells(
-            random.randrange(3, 8) * GRID_WIDTH
+            random.randrange(3, 8) * self._grid_width
         )
 
-    @staticmethod
-    def generate_random_cells(nof_cells: int) -> set[tuple[int, int]]:
+    def generate_random_cells(self, nof_cells: int) -> set[tuple[int, int]]:
         """
         Generates randoms positions, without repeating them, to be considered
         as living cells.
@@ -47,12 +45,14 @@ class GameOfLife:
             position.
         """
         return set(
-            (random.randrange(0, GRID_HEIGHT), random.randrange(0, GRID_WIDTH))
+            (
+                random.randrange(0, self._grid_height),
+                random.randrange(0, self._grid_width),
+            )
             for _ in range(nof_cells)
         )
 
-    @staticmethod
-    def get_neighbors_positions(col: int, row: int) -> list[tuple[int, int]]:
+    def get_neighbors_positions(self, col: int, row: int) -> list[tuple[int, int]]:
         """
         Giving a cell coordinates, returns all its neighbors. The method does not
         consider the state of the cells at these positions.
@@ -75,12 +75,12 @@ class GameOfLife:
         for dx in displacement:
             cell_x = col + dx
             # Skip cells outside the width limits.
-            if cell_x < 0 or cell_x > GRID_WIDTH:
+            if cell_x < 0 or cell_x > self._grid_width:
                 continue
             for dy in displacement:
                 cell_y = row + dy
                 # Skip cells outside the height limits.
-                if cell_y < 0 or cell_y > GRID_HEIGHT:
+                if cell_y < 0 or cell_y > self._grid_height:
                     continue
 
                 # Skip current cell
@@ -129,22 +129,25 @@ class GameOfLife:
         """
         Draws, on the screen, the vertical and horizontal lines that compose the grid.
         """
-        for row in range(GRID_HEIGHT):
-            row_cell_line_pos = row * TILE_SIZE
+        width = self._screen.get_width()
+        height = self._screen.get_height()
+
+        for row in range(self._grid_height):
+            row_cell_line_pos = row * GameOfLife.TILE_SIZE
             pygame.draw.line(
                 surface=self._screen,
                 color=RGB.BLACK,
                 start_pos=(0, row_cell_line_pos),
-                end_pos=(WIDTH, row_cell_line_pos),
+                end_pos=(width, row_cell_line_pos),
             )
 
-        for col in range(GRID_WIDTH):
-            col_cell_line_pos = col * TILE_SIZE
+        for col in range(self._grid_width):
+            col_cell_line_pos = col * GameOfLife.TILE_SIZE
             pygame.draw.line(
                 surface=self._screen,
                 color=RGB.BLACK,
                 start_pos=(col_cell_line_pos, 0),
-                end_pos=(col_cell_line_pos, HEIGHT),
+                end_pos=(col_cell_line_pos, height),
             )
 
     def paint_cells(self, positions: set[tuple[int, int]]):
@@ -157,8 +160,9 @@ class GameOfLife:
             All cells' positions, specified as (col, row), representing the
             living cells.
         """
+        size = GameOfLife.TILE_SIZE
         for col, row in positions:
-            cell_rect = (col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+            cell_rect = (col * size, row * size, size, size)
             pygame.draw.rect(surface=self._screen, color=RGB.YELLOW, rect=cell_rect)
 
     def update_display(self):
@@ -174,7 +178,7 @@ class GameOfLife:
     def update_mouse_clicked_cell(self):
         """Updates the state of the cell, which was clicked by the mouse."""
         pixel_x, pixel_y = pygame.mouse.get_pos()
-        cell_pos = (pixel_x // TILE_SIZE, pixel_y // TILE_SIZE)
+        cell_pos = (pixel_x // GameOfLife.TILE_SIZE, pixel_y // GameOfLife.TILE_SIZE)
 
         if cell_pos in self._positions:
             self._positions.remove(cell_pos)
@@ -185,7 +189,7 @@ class GameOfLife:
         """Main run loop for the game."""
 
         while self._running:
-            self._clock.tick(FPS)
+            self._clock.tick(GameOfLife.FPS)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
