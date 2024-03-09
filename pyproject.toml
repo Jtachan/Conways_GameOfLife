@@ -13,9 +13,8 @@ requires-python = ">=3.8"
 license = { text = "MIT license" }
 dynamic = ["readme", "version"]
 
-# you can add CLI tools which should be installed when installing the package
-# [project.scripts]
-# cli-command = "game_of_life.module:function"
+[project.scripts]
+game-of-life = "game_of_life.cli:launch_game"
 
 [build-system]
 requires = ["setuptools"]
