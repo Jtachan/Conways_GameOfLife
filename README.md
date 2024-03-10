@@ -33,11 +33,18 @@ pip install .
 
 ## Usage
 
-Launch the game with the following command:
+### CLI call
 
-```shell
-python src/game_of_life/app.py
+The game is launchable through the command line interface:
+
+```commandline
+game-of-life [-gw <grid-width>] [-gh <grid-height>]
 ```
+
+- `grid-width`: Optional parameter to set the number of cells that compose the width of the grid. By default, it is set to 40.
+- `grid-height`: Optional parameter to set the number of cells that compose the height of the grid. By default, it is set to 40. 
+
+### Instructions
 
 The following instructions are printed on the terminal:
 

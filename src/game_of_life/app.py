@@ -13,46 +13,37 @@ class GameOfLife:
     TILE_SIZE = 20
     FPS = 10
 
-    def __init__(self, width: int = 800, height: int = 800):
+    def __init__(self, grid_width: int = 40, grid_height: int = 40):
         """Constructor of the class.
 
         Parameters
         ----------
-        width: int
-            Number of pixels that represent the width of the screen.
-        height: int
-            Number of pixels that represent the height of the screen.
+        grid_width: int
+            Number of cells that represent the width of the grid.
+        grid_height: int
+            Number of cells that represent the height of the grid.
         """
         self._running = True
         self._playing = True
-        self._grid_width = width // GameOfLife.TILE_SIZE
-        self._grid_height = height // GameOfLife.TILE_SIZE
+        self._grid_width = grid_width
+        self._grid_height = grid_height
 
-        self._screen = pygame.display.set_mode((width, width))
+        width = grid_width * GameOfLife.TILE_SIZE
+        height = grid_height * GameOfLife.TILE_SIZE
+
+        self._screen = pygame.display.set_mode((width, height))
         self._clock = pygame.time.Clock()
-        self._positions = self.generate_random_cells(
-            random.randrange(3, 8) * self._grid_width
-        )
+        self._positions = set()
+        self.generate_random_cells()
 
-    def generate_random_cells(self, nof_cells: int) -> set[tuple[int, int]]:
+    def generate_random_cells(self):
         """
         Generates randoms positions, without repeating them, to be considered
-        as living cells.
-
-        Parameters
-        ----------
-        nof_cells: int
-            Ideal number of cells to generate.
-
-        Returns
-        -------
-        set of positions:
-            Final random generated positions. Its length might be lower than the
-            specified number of cells, as the same cell position could be generated
-            multiple times. This final returned value does not contain any repeated
-            position.
+        as living cells. This function overrides any existing position in
+        'self._positions'.
         """
-        return set(
+        nof_cells = random.randrange(3, 8) * self._grid_width
+        self._positions = set(
             (
                 random.randrange(0, self._grid_height),
                 random.randrange(0, self._grid_width),
@@ -215,9 +206,7 @@ class GameOfLife:
                             "Playing" if self._playing else "Paused"
                         )
                     elif event.key == pygame.K_g:
-                        self._positions = self.generate_random_cells(
-                            nof_cells=random.randrange(4, 8) * self._grid_width
-                        )
+                        self.generate_random_cells()
 
             self.update_display()
             if self._playing:
